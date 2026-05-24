@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { getToken } from "../services/authService";
+import ConfirmModal from "../components/ConfirmModal";
 
 const API = "/api/sync";
 const headers = () => ({ Authorization: `Bearer ${getToken()}` });
@@ -11,6 +12,7 @@ export default function SyncPage() {
   const [syncLoading, setSyncLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [showSyncModal, setShowSyncModal] = useState(false);
 
   const fetchLogs = async () => {
     setLoading(true);
@@ -35,8 +37,6 @@ export default function SyncPage() {
   };
 
   const handleSync = async () => {
-    if (!confirm("Apakah Anda yakin ingin memulai sinkronisasi data Dapodik?"))
-      return;
     setSyncLoading(true);
     setError("");
     try {
@@ -77,16 +77,25 @@ export default function SyncPage() {
           <p className="text-sm text-gray-500">
             Kelola sinkronisasi data dari sumber Dapodik
           </p>
+          <ConfirmModal
+            isOpen={showSyncModal}
+            onClose={() => setShowSyncModal(false)}
+            onConfirm={handleSync}
+            title="Mulai Sinkronisasi"
+            message="Proses sinkronisasi akan mengambil dan memperbarui data dari sumber Dapodik. Proses ini mungkin membutuhkan beberapa menit."
+            confirmText="Ya, Mulai"
+            cancelText="Batal"
+            type="info"
+          />
         </div>
         <button
-          onClick={handleSync}
+          onClick={() => setShowSyncModal(true)}
           disabled={syncLoading}
           className="bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm px-5 py-2.5 rounded-lg transition flex items-center gap-2"
         >
           {syncLoading ? (
             <>
-              <span className="animate-spin">⟳</span>
-              Menyinkronkan...
+              <span className="animate-spin">⟳</span> Menyinkronkan...
             </>
           ) : (
             <>🔄 Mulai Sinkronisasi</>

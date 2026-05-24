@@ -16,16 +16,15 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
-// Warna marker berdasarkan jenjang
 const markerColor = (jenjang) => {
   const colors = {
-    PAUD: "pink",
-    SD: "blue",
-    SMP: "green",
-    SMA: "orange",
-    SMK: "red",
+    PAUD: "#EC4899",
+    SD: "#3B82F6",
+    SMP: "#10B981",
+    SMA: "#F59E0B",
+    SMK: "#EF4444",
   };
-  return colors[jenjang] || "blue";
+  return colors[jenjang] || "#6B7280";
 };
 
 const createIcon = (jenjang) => {
@@ -33,16 +32,18 @@ const createIcon = (jenjang) => {
   return L.divIcon({
     className: "",
     html: `<div style="
-      background:${color === "pink" ? "#EC4899" : color === "blue" ? "#3B82F6" : color === "green" ? "#10B981" : color === "orange" ? "#F59E0B" : "#EF4444"};
-      width:12px; height:12px; border-radius:50%;
-      border:2px solid white; box-shadow:0 1px 3px rgba(0,0,0,0.4)">
+      background:${color};
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      border:2px solid white;
+      box-shadow:0 1px 3px rgba(0,0,0,0.4)">
     </div>`,
     iconSize: [12, 12],
     iconAnchor: [6, 6],
   });
 };
 
-// Komponen untuk fly to lokasi
 function FlyToLocation({ coords }) {
   const map = useMap();
   useEffect(() => {
@@ -64,7 +65,15 @@ export default function MapPage() {
   const [flyTo, setFlyTo] = useState(null);
   const [filterJenjang, setFilterJenjang] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const searchTimeout = useRef(null);
+
+  // Deteksi ukuran layar
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const fetchCoordinates = async () => {
     setLoading(true);
@@ -92,6 +101,14 @@ export default function MapPage() {
     try {
       const detail = await getSchoolDetail(npsn);
       setSelectedSchool(detail);
+      // Di mobile, scroll ke panel detail
+      if (isMobile) {
+        setTimeout(() => {
+          document
+            .getElementById("detail-panel")
+            ?.scrollIntoView({ behavior: "smooth" });
+        }, 300);
+      }
     } catch {
       setSelectedSchool(null);
     } finally {
@@ -124,12 +141,20 @@ export default function MapPage() {
     setSearchResults([]);
   };
 
+  const legendItems = [
+    { label: "PAUD", color: "#EC4899" },
+    { label: "SD", color: "#3B82F6" },
+    { label: "SMP", color: "#10B981" },
+    { label: "SMA", color: "#F59E0B" },
+    { label: "SMK", color: "#EF4444" },
+  ];
+
   return (
-    <div className="flex flex-col gap-4 h-full">
+    <div className="flex flex-col gap-3">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-start gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800">
             Peta Sebaran Sekolah
           </h1>
           <p className="text-sm text-gray-500">
@@ -138,16 +163,16 @@ export default function MapPage() {
         </div>
         <button
           onClick={fetchCoordinates}
-          className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg transition"
+          className="shrink-0 bg-blue-600 hover:bg-blue-700 text-white text-xs md:text-sm px-3 md:px-4 py-2 rounded-lg transition flex items-center gap-1.5"
         >
-          🔄 Perbarui Peta
+          🔄 <span className="hidden sm:inline">Perbarui</span> Peta
         </button>
       </div>
 
       {/* Filter & Search */}
-      <div className="bg-white rounded-xl shadow p-4 flex flex-wrap gap-3 items-end">
+      <div className="bg-white rounded-xl shadow p-3 md:p-4 flex flex-col sm:flex-row flex-wrap gap-3 items-end">
         {/* Search */}
-        <div className="flex flex-col gap-1 relative flex-1 min-w-48">
+        <div className="flex flex-col gap-1 relative flex-1 min-w-0 w-full sm:w-auto">
           <label className="text-xs text-gray-500 font-medium">
             Cari Sekolah
           </label>
@@ -156,10 +181,10 @@ export default function MapPage() {
             placeholder="Ketik nama sekolah..."
             value={searchKeyword}
             onChange={(e) => handleSearch(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
           />
           {searchResults.length > 0 && (
-            <div className="absolute top-14 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
+            <div className="absolute top-14 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-[500] max-h-48 overflow-y-auto">
               {searchResults.map((r, i) => (
                 <button
                   key={i}
@@ -177,12 +202,12 @@ export default function MapPage() {
         </div>
 
         {/* Filter Jenjang */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 w-full sm:w-auto">
           <label className="text-xs text-gray-500 font-medium">Jenjang</label>
           <select
             value={filterJenjang}
             onChange={(e) => setFilterJenjang(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
           >
             <option value="">Semua</option>
             <option value="PAUD">PAUD</option>
@@ -194,12 +219,12 @@ export default function MapPage() {
         </div>
 
         {/* Filter Status */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 w-full sm:w-auto">
           <label className="text-xs text-gray-500 font-medium">Status</label>
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
           >
             <option value="">Semua</option>
             <option value="Negeri">Negeri</option>
@@ -209,22 +234,16 @@ export default function MapPage() {
 
         <button
           onClick={fetchCoordinates}
-          className="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-lg transition"
+          className="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-1.5 rounded-lg transition w-full sm:w-auto"
         >
           Terapkan Filter
         </button>
       </div>
 
-      {/* Legenda Warna */}
-      <div className="bg-white rounded-xl shadow px-4 py-3 flex flex-wrap gap-4 text-xs text-gray-600">
+      {/* Legenda */}
+      <div className="bg-white rounded-xl shadow px-4 py-2.5 flex flex-wrap gap-3 text-xs text-gray-600">
         <span className="font-medium text-gray-700">Legenda:</span>
-        {[
-          { label: "PAUD", color: "#EC4899" },
-          { label: "SD", color: "#3B82F6" },
-          { label: "SMP", color: "#10B981" },
-          { label: "SMA", color: "#F59E0B" },
-          { label: "SMK", color: "#EF4444" },
-        ].map((item) => (
+        {legendItems.map((item) => (
           <span key={item.label} className="flex items-center gap-1.5">
             <span
               style={{ background: item.color }}
@@ -241,10 +260,20 @@ export default function MapPage() {
         </div>
       )}
 
-      {/* Konten Utama: Peta + Detail */}
-      <div className="flex gap-4 flex-1">
+      {/* ===== LAYOUT DESKTOP: Peta kiri, Detail kanan ===== */}
+      {/* ===== LAYOUT MOBILE: Peta atas, Detail bawah ===== */}
+      <div
+        className={`flex gap-4 ${isMobile ? "flex-col" : "flex-row items-stretch"}`}
+      >
         {/* Peta */}
-        <div className="flex-1 rounded-xl overflow-hidden shadow border border-gray-200 min-h-96">
+        <div
+          className={`rounded-xl overflow-hidden shadow border border-gray-200 ${isMobile ? "w-full" : "flex-1"}`}
+          style={{
+            height: isMobile ? "55vh" : "520px",
+            position: "relative",
+            zIndex: 1,
+          }}
+        >
           {loading ? (
             <div className="flex items-center justify-center h-full bg-gray-50 text-gray-400 text-sm">
               Memuat peta...
@@ -253,7 +282,8 @@ export default function MapPage() {
             <MapContainer
               center={[-6.9175, 107.6191]}
               zoom={13}
-              style={{ height: "100%", width: "100%", minHeight: "480px" }}
+              style={{ height: "100%", width: "100%" }}
+              zoomControl={true}
             >
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -288,48 +318,84 @@ export default function MapPage() {
         </div>
 
         {/* Panel Detail Sekolah */}
-        <div className="w-72 bg-white rounded-xl shadow border border-gray-200 p-4 flex flex-col gap-3 overflow-y-auto">
+        <div
+          id="detail-panel"
+          className={`bg-white rounded-xl shadow border border-gray-200 p-4 flex flex-col gap-3 overflow-y-auto
+            ${isMobile ? "w-full" : "w-72 shrink-0"}
+          `}
+          style={{ maxHeight: isMobile ? "none" : "520px" }}
+        >
           <h2 className="text-sm font-semibold text-gray-700 border-b pb-2">
             Detail Sekolah
           </h2>
 
           {detailLoading && (
-            <p className="text-xs text-gray-400 text-center py-4">
-              Memuat detail...
-            </p>
+            <div className="flex items-center justify-center py-8 gap-2 text-blue-500">
+              <svg
+                className="animate-spin w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v8z"
+                />
+              </svg>
+              <span className="text-xs text-gray-400">Memuat detail...</span>
+            </div>
           )}
 
           {!detailLoading && !selectedSchool && (
-            <p className="text-xs text-gray-400 text-center py-8">
-              Klik marker sekolah pada peta untuk melihat detail informasi
-            </p>
+            <div className="flex flex-col items-center justify-center py-8 gap-3 text-center">
+              <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center text-2xl">
+                📍
+              </div>
+              <p className="text-xs text-gray-400 leading-relaxed">
+                Klik marker sekolah pada peta untuk melihat detail informasi
+              </p>
+              {isMobile && (
+                <p className="text-xs text-blue-400">
+                  ↑ Scroll ke atas untuk melihat peta
+                </p>
+              )}
+            </div>
           )}
 
           {!detailLoading && selectedSchool && (
             <>
               <div className="flex flex-col gap-2">
-                <p className="text-sm font-bold text-gray-800">
+                <p className="text-sm font-bold text-gray-800 leading-snug">
                   {selectedSchool.nama_sekolah}
                 </p>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   <span className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">
                     {selectedSchool.jenjang_pendidikan}
                   </span>
                   <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">
                     {selectedSchool.status_sekolah}
                   </span>
+                  {selectedSchool.akreditasi && (
+                    <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded-full">
+                      Akreditasi {selectedSchool.akreditasi}
+                    </span>
+                  )}
                 </div>
               </div>
 
-              <div className="flex flex-col gap-1.5 text-xs text-gray-600">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">NPSN</span>
-                  <span className="font-medium">{selectedSchool.npsn}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Akreditasi</span>
-                  <span className="font-medium">
-                    {selectedSchool.akreditasi ?? "-"}
+              <div className="flex flex-col gap-2 text-xs text-gray-600 bg-gray-50 rounded-lg p-3">
+                <div className="flex justify-between gap-2">
+                  <span className="text-gray-400 shrink-0">NPSN</span>
+                  <span className="font-mono font-medium">
+                    {selectedSchool.npsn}
                   </span>
                 </div>
                 <div className="flex flex-col gap-0.5">
@@ -340,46 +406,68 @@ export default function MapPage() {
                 </div>
               </div>
 
-              {selectedSchool.statistik && (
-                <>
-                  <div className="border-t pt-2">
-                    <p className="text-xs font-semibold text-gray-600 mb-2">
-                      Statistik {selectedSchool.statistik.tahun_ajaran} —{" "}
-                      {selectedSchool.statistik.semester}
-                    </p>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        {
-                          label: "Siswa",
-                          value: selectedSchool.statistik.jumlah_siswa,
-                          color: "bg-blue-50 text-blue-700",
-                        },
-                        {
-                          label: "Guru",
-                          value: selectedSchool.statistik.jumlah_guru,
-                          color: "bg-green-50 text-green-700",
-                        },
-                        {
-                          label: "Rombel",
-                          value: selectedSchool.statistik.jumlah_rombel,
-                          color: "bg-yellow-50 text-yellow-700",
-                        },
-                      ].map((item) => (
-                        <div
-                          key={item.label}
-                          className={`${item.color} rounded-lg p-2 text-center`}
-                        >
-                          <p className="text-lg font-bold">{item.value}</p>
-                          <p className="text-xs">{item.label}</p>
-                        </div>
-                      ))}
+              {selectedSchool.statistik ? (
+                <div className="border-t pt-3">
+                  <p className="text-xs font-semibold text-gray-600 mb-2">
+                    📊 Statistik {selectedSchool.statistik.tahun_ajaran} —{" "}
+                    {selectedSchool.statistik.semester}
+                  </p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      {
+                        label: "Siswa",
+                        value: selectedSchool.statistik.jumlah_siswa,
+                        color: "bg-blue-50 text-blue-700 border-blue-100",
+                      },
+                      {
+                        label: "Guru",
+                        value: selectedSchool.statistik.jumlah_guru,
+                        color: "bg-green-50 text-green-700 border-green-100",
+                      },
+                      {
+                        label: "Rombel",
+                        value: selectedSchool.statistik.jumlah_rombel,
+                        color: "bg-yellow-50 text-yellow-700 border-yellow-100",
+                      },
+                    ].map((item) => (
+                      <div
+                        key={item.label}
+                        className={`${item.color} border rounded-xl p-2.5 text-center`}
+                      >
+                        <p className="text-lg font-bold">{item.value}</p>
+                        <p className="text-xs mt-0.5">{item.label}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-gray-50 rounded-lg p-2 text-center border border-gray-100">
+                      <p className="font-bold text-gray-700">
+                        {selectedSchool.statistik.jumlah_siswa &&
+                        selectedSchool.statistik.jumlah_guru
+                          ? (
+                              selectedSchool.statistik.jumlah_siswa /
+                              selectedSchool.statistik.jumlah_guru
+                            ).toFixed(1)
+                          : "-"}
+                      </p>
+                      <p className="text-gray-400 mt-0.5">Rasio Siswa/Guru</p>
+                    </div>
+                    <div className="bg-gray-50 rounded-lg p-2 text-center border border-gray-100">
+                      <p className="font-bold text-gray-700">
+                        {selectedSchool.statistik.jumlah_siswa &&
+                        selectedSchool.statistik.jumlah_rombel
+                          ? (
+                              selectedSchool.statistik.jumlah_siswa /
+                              selectedSchool.statistik.jumlah_rombel
+                            ).toFixed(1)
+                          : "-"}
+                      </p>
+                      <p className="text-gray-400 mt-0.5">Rasio Siswa/Rombel</p>
                     </div>
                   </div>
-                </>
-              )}
-
-              {!selectedSchool.statistik && (
-                <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-400 text-center">
+                </div>
+              ) : (
+                <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-400 text-center border border-gray-100">
                   Data statistik belum tersedia
                 </div>
               )}

@@ -1,5 +1,7 @@
-import { NavLink } from "react-router-dom";
+import { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import ConfirmModal from "./ConfirmModal";
 
 const menu = [
   {
@@ -89,20 +91,21 @@ const menu = [
 ];
 
 export default function Sidebar({ open }) {
-  const { role } = useAuth();
+  const { role, logoutContext } = useAuth();
+  const navigate = useNavigate();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const filteredMenu = menu.filter((m) => m.roles.includes(role));
+
+  const handleLogoutConfirm = () => {
+    logoutContext();
+    navigate("/login");
+  };
 
   return (
     <>
-      {/* Sidebar */}
       <aside
-        className={`
-          flex flex-col bg-gray-900 text-white
-          transition-all duration-300 ease-in-out
-          overflow-hidden shrink-0
-          ${open ? "w-56" : "w-16"}
-        `}
-        style={{ height: "100%" }}
+        className="flex flex-col bg-gray-900 text-white transition-all duration-300 ease-in-out overflow-hidden shrink-0"
+        style={{ height: "100%", width: open ? "224px" : "64px" }}
       >
         {/* Menu Items */}
         <nav className="flex flex-col gap-1 p-2 flex-1 mt-2">
@@ -123,19 +126,14 @@ export default function Sidebar({ open }) {
             >
               {({ isActive }) => (
                 <>
-                  {/* Indikator aktif */}
                   {isActive && (
                     <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-blue-400 rounded-r-full" />
                   )}
-
-                  {/* Icon */}
                   <div
                     className={`shrink-0 transition-transform duration-200 ${isActive ? "scale-110" : "group-hover:scale-105"}`}
                   >
                     {item.icon}
                   </div>
-
-                  {/* Label & Desc */}
                   <div
                     className={`flex flex-col overflow-hidden transition-all duration-300 ${open ? "opacity-100 w-auto" : "opacity-0 w-0"}`}
                   >
@@ -154,18 +152,66 @@ export default function Sidebar({ open }) {
           ))}
         </nav>
 
-        {/* Footer Sidebar */}
+        {/* Divider */}
+        <div className="mx-3 border-t border-gray-800" />
+
+        {/* Tombol Logout di Sidebar */}
+        <div className="p-2">
+          <button
+            onClick={() => setShowLogoutModal(true)}
+            title={!open ? "Keluar" : ""}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-400 hover:bg-red-900/40 hover:text-red-400 transition-all duration-200 group"
+          >
+            <div className="shrink-0 group-hover:scale-105 transition-transform">
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+            </div>
+            <div
+              className={`flex flex-col overflow-hidden transition-all duration-300 ${open ? "opacity-100 w-auto" : "opacity-0 w-0"}`}
+            >
+              <span className="text-sm font-medium whitespace-nowrap leading-tight">
+                Keluar
+              </span>
+              <span className="text-xs text-gray-600 whitespace-nowrap">
+                Akhiri sesi
+              </span>
+            </div>
+          </button>
+        </div>
+
+        {/* Footer */}
         <div
-          className={`p-3 border-t border-gray-800 transition-all duration-300 ${open ? "opacity-100" : "opacity-0"}`}
+          className={`p-3 transition-all duration-300 ${open ? "opacity-100" : "opacity-0"}`}
         >
           <div className="bg-gray-800 rounded-xl p-3">
-            <p className="text-xs text-gray-400 leading-relaxed">
-              Dashboard Backbone Dapodik
-            </p>
-            <p className="text-xs text-gray-600 mt-0.5">v1.0.0 — 2025</p>
+            <p className="text-xs text-gray-400">Dashboard Backbone Dapodik</p>
+            <p className="text-xs text-gray-600 mt-0.5">v1.0.0 — 2026</p>
           </div>
         </div>
       </aside>
+
+      {/* Modal Logout dari Sidebar */}
+      <ConfirmModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleLogoutConfirm}
+        title="Keluar dari Sistem"
+        message="Apakah Anda yakin ingin keluar? Sesi Anda akan diakhiri dan Anda perlu login kembali."
+        confirmText="Ya, Keluar"
+        cancelText="Batal"
+        type="danger"
+      />
     </>
   );
 }

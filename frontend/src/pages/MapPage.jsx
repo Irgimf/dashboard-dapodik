@@ -1,3 +1,4 @@
+import Button from "../components/Button";
 import { useState, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
@@ -161,12 +162,28 @@ export default function MapPage() {
             Kota Bandung — {geoData.features?.length ?? 0} sekolah ditampilkan
           </p>
         </div>
-        <button
+        <Button
           onClick={fetchCoordinates}
-          className="shrink-0 bg-blue-600 hover:bg-blue-700 text-white text-xs md:text-sm px-3 md:px-4 py-2 rounded-lg transition flex items-center gap-1.5"
+          variant="primary"
+          loading={loading}
+          icon={
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+              />
+            </svg>
+          }
         >
-          🔄 <span className="hidden sm:inline">Perbarui</span> Peta
-        </button>
+          Perbarui Peta
+        </Button>
       </div>
 
       {/* Filter & Search */}
@@ -232,12 +249,29 @@ export default function MapPage() {
           </select>
         </div>
 
-        <button
+        <Button
           onClick={fetchCoordinates}
-          className="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-1.5 rounded-lg transition w-full sm:w-auto"
+          variant="success"
+          size="sm"
+          className="w-full sm:w-auto"
+          icon={
+            <svg
+              className="w-3.5 h-3.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"
+              />
+            </svg>
+          }
         >
           Terapkan Filter
-        </button>
+        </Button>
       </div>
 
       {/* Legenda */}

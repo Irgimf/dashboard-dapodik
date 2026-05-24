@@ -1,3 +1,4 @@
+import Button from "../components/Button";
 import { useState, useEffect } from "react";
 import {
   getKPI,
@@ -89,12 +90,28 @@ export default function DashboardPage() {
           </h1>
           <p className="text-sm text-gray-500">Kota Bandung — Data Dapodik</p>
         </div>
-        <button
+        <Button
           onClick={fetchData}
-          className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg transition"
+          variant="primary"
+          loading={loading}
+          icon={
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+          }
         >
-          🔄 Perbarui Data
-        </button>
+          Perbarui Data
+        </Button>
       </div>
 
       {/* Filter */}
@@ -153,23 +170,56 @@ export default function DashboardPage() {
             <option value="Swasta">Swasta</option>
           </select>
         </div>
-        <button
+        <Button
           onClick={fetchData}
-          className="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-lg transition"
+          variant="success"
+          size="sm"
+          icon={
+            <svg
+              className="w-3.5 h-3.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"
+              />
+            </svg>
+          }
         >
           Terapkan Filter
-        </button>
-        <button
+        </Button>
+
+        <Button
           onClick={() => {
             setFilterTahun("");
             setFilterSemester("");
             setFilterJenjang("");
             setFilterStatus("");
           }}
-          className="bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm px-4 py-2 rounded-lg transition"
+          variant="ghost"
+          size="sm"
+          icon={
+            <svg
+              className="w-3.5 h-3.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          }
         >
           Reset
-        </button>
+        </Button>
       </div>
 
       {/* Error */}

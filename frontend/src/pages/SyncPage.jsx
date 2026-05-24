@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { getToken } from "../services/authService";
 import ConfirmModal from "../components/ConfirmModal";
+import Button from "../components/Button";
 
 const API = "/api/sync";
 const headers = () => ({ Authorization: `Bearer ${getToken()}` });
@@ -88,19 +89,28 @@ export default function SyncPage() {
             type="info"
           />
         </div>
-        <button
+        <Button
           onClick={() => setShowSyncModal(true)}
-          disabled={syncLoading}
-          className="bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm px-5 py-2.5 rounded-lg transition flex items-center gap-2"
+          variant="info"
+          loading={syncLoading}
+          icon={
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+          }
         >
-          {syncLoading ? (
-            <>
-              <span className="animate-spin">⟳</span> Menyinkronkan...
-            </>
-          ) : (
-            <>🔄 Mulai Sinkronisasi</>
-          )}
-        </button>
+          Mulai Sinkronisasi
+        </Button>
       </div>
 
       {/* Notifikasi */}

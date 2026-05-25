@@ -103,7 +103,7 @@ export default function LoginPage() {
             <div className="flex gap-3">
               {[
                 { angka: "30", label: "Kecamatan" },
-                { angka: "2.409", label: "Sekolah" },
+                { angka: "2.384", label: "Sekolah" },
                 { angka: "5", label: "Jenjang" },
               ].map((item) => (
                 <div

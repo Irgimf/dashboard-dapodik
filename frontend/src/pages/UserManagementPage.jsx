@@ -275,91 +275,166 @@ export default function UserManagementPage() {
       )}
 
       {/* Tabel Pengguna */}
+      {/* Ganti seluruh bagian tabel dengan ini */}
       <div className="bg-white rounded-xl shadow overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="text-left px-5 py-3 text-gray-600 font-semibold">
-                No
-              </th>
-              <th className="text-left px-5 py-3 text-gray-600 font-semibold">
-                Username
-              </th>
-              <th className="text-left px-5 py-3 text-gray-600 font-semibold">
-                Role
-              </th>
-              <th className="text-left px-5 py-3 text-gray-600 font-semibold">
-                Status
-              </th>
-              <th className="text-left px-5 py-3 text-gray-600 font-semibold">
-                Login Terakhir
-              </th>
-              <th className="text-left px-5 py-3 text-gray-600 font-semibold">
-                Aksi
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={6} className="text-center py-10 text-gray-400">
-                  Memuat data...
-                </td>
-              </tr>
-            ) : users.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="text-center py-10 text-gray-400">
-                  Belum ada pengguna terdaftar
-                </td>
-              </tr>
-            ) : (
-              users.map((user, index) => (
-                <tr
-                  key={user.user_id}
-                  className="border-b border-gray-100 hover:bg-gray-50 transition"
-                >
-                  <td className="px-5 py-3 text-gray-500">{index + 1}</td>
-                  <td className="px-5 py-3 font-medium text-gray-800">
+        {/* Header tabel — hanya desktop */}
+        <div className="hidden md:grid grid-cols-6 gap-3 px-5 py-3 bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+          <div>No</div>
+          <div className="col-span-2">Username</div>
+          <div>Role</div>
+          <div>Status</div>
+          <div>Aksi</div>
+        </div>
+
+        {loading ? (
+          <div className="text-center py-10 text-gray-400 text-sm">
+            Memuat data...
+          </div>
+        ) : users.length === 0 ? (
+          <div className="text-center py-10 text-gray-400 text-sm">
+            Belum ada pengguna terdaftar
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-100">
+            {users.map((user, index) => (
+              <div key={user.user_id} className="hover:bg-gray-50 transition">
+                {/* Layout Desktop */}
+                <div className="hidden md:grid grid-cols-6 gap-3 px-5 py-3.5 items-center text-sm">
+                  <div className="text-gray-400">{index + 1}</div>
+                  <div className="col-span-2 font-medium text-gray-800">
                     {user.username}
-                  </td>
-                  <td className="px-5 py-3">
+                  </div>
+                  <div>
                     <span
                       className={`px-2 py-0.5 rounded-full text-xs font-medium ${roleBadge(user.role)}`}
                     >
                       {user.role}
                     </span>
-                  </td>
-                  <td className="px-5 py-3">
+                  </div>
+                  <div>
                     <span
                       className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusBadge(user.status)}`}
                     >
                       {user.status}
                     </span>
-                  </td>
-                  <td className="px-5 py-3 text-gray-500">
-                    {user.last_login
-                      ? new Date(user.last_login).toLocaleString("id-ID")
-                      : "-"}
-                  </td>
-                  <td className="px-5 py-3 flex gap-2">
+                  </div>
+                  <div className="flex gap-2">
                     <button
                       onClick={() => setEditUser(user)}
-                      className="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 text-xs px-3 py-1.5 rounded-lg transition"
+                      className="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 text-xs px-2.5 py-1.5 rounded-lg transition flex items-center gap-1"
                     >
-                      ✏️ Ubah
+                      <svg
+                        className="w-3 h-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        />
+                      </svg>
+                      Ubah
                     </button>
                     <button
                       onClick={() => setDeleteConfirm(user)}
-                      className="bg-red-100 hover:bg-red-200 text-red-700 text-xs px-3 py-1.5 rounded-lg transition"
+                      className="bg-red-100 hover:bg-red-200 text-red-700 text-xs px-2.5 py-1.5 rounded-lg transition flex items-center gap-1"
                     >
-                      🗑️ Hapus
+                      <svg
+                        className="w-3 h-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
+                      </svg>
+                      Hapus
                     </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                  </div>
+                </div>
+
+                {/* Layout Mobile — card per user */}
+                <div className="md:hidden px-4 py-4 flex flex-col gap-3">
+                  {/* Baris atas: nomor + nama + badge */}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-sm uppercase shrink-0">
+                        {user.username?.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-800 text-sm">
+                          {user.username}
+                        </p>
+                        <p className="text-xs text-gray-400">#{index + 1}</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-xs font-medium ${roleBadge(user.role)}`}
+                      >
+                        {user.role}
+                      </span>
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusBadge(user.status)}`}
+                      >
+                        {user.status}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Baris bawah: tombol aksi */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setEditUser(user)}
+                      className="flex-1 bg-yellow-50 hover:bg-yellow-100 text-yellow-700 border border-yellow-200 text-xs py-2 rounded-xl transition flex items-center justify-center gap-1.5 font-medium"
+                    >
+                      <svg
+                        className="w-3.5 h-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        />
+                      </svg>
+                      Ubah
+                    </button>
+                    <button
+                      onClick={() => setDeleteConfirm(user)}
+                      className="flex-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs py-2 rounded-xl transition flex items-center justify-center gap-1.5 font-medium"
+                    >
+                      <svg
+                        className="w-3.5 h-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
+                      </svg>
+                      Hapus
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Modal Tambah */}

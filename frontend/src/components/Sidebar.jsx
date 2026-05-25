@@ -105,7 +105,11 @@ export default function Sidebar({ open }) {
     <>
       <aside
         className="flex flex-col bg-gray-900 text-white transition-all duration-300 ease-in-out overflow-hidden shrink-0"
-        style={{ height: "100%", width: open ? "224px" : "64px" }}
+        style={{
+          height: "100%",
+          width: open ? "224px" : "64px",
+          transition: "width 200ms ease",
+        }}
       >
         {/* Menu Items */}
         <nav className="flex flex-col gap-1 p-2 flex-1 mt-2">
@@ -206,7 +210,7 @@ export default function Sidebar({ open }) {
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}
         onConfirm={handleLogoutConfirm}
-        title="Keluar dari Sistem"
+        title="Konfirmasi Logout"
         message="Apakah Anda yakin ingin keluar? Sesi Anda akan diakhiri dan Anda perlu login kembali."
         confirmText="Ya, Keluar"
         cancelText="Batal"

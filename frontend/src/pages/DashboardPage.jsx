@@ -65,12 +65,15 @@ export default function DashboardPage() {
         getGrafikStatus(),
         getGrafikTren(),
       ]);
+
       setKpi(kpiData);
-      setGrafikJenjang(jenjangData);
-      setGrafikStatus(statusData);
-      setGrafikTren(trenData);
+      // Pastikan selalu array
+      setGrafikJenjang(Array.isArray(jenjangData) ? jenjangData : []);
+      setGrafikStatus(Array.isArray(statusData) ? statusData : []);
+      setGrafikTren(Array.isArray(trenData) ? trenData : []);
     } catch (err) {
       setError("Gagal memuat data. Pastikan backend berjalan.");
+      console.error("Dashboard error:", err);
     } finally {
       setLoading(false);
     }

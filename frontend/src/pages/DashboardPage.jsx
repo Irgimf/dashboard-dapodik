@@ -241,24 +241,25 @@ export default function DashboardPage() {
         <>
           {/* KPI Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            // Cari bagian KPICard dan ganti value-nya
             <KPICard
               label="Total Sekolah"
-              value={kpi?.total_sekolah}
+              value={kpi?.total_sekolah ?? 0}
               color="border-blue-500"
             />
             <KPICard
               label="Total Siswa"
-              value={kpi?.total_siswa}
+              value={kpi?.total_siswa ?? 0}
               color="border-green-500"
             />
             <KPICard
               label="Total Guru"
-              value={kpi?.total_guru}
+              value={kpi?.total_guru ?? 0}
               color="border-yellow-500"
             />
             <KPICard
               label="Rasio Siswa/Guru"
-              value={kpi?.rasio_siswa_guru}
+              value={kpi?.rasio_siswa_guru ?? 0}
               color="border-purple-500"
             />
           </div>

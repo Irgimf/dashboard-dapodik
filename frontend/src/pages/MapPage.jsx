@@ -84,7 +84,9 @@ export default function MapPage() {
       if (filterJenjang) params.jenjang = filterJenjang;
       if (filterStatus) params.status_sekolah = filterStatus;
       const data = await getCoordinates(params);
-      setGeoData(data);
+      setGeoData({
+        features: Array.isArray(data?.features) ? data.features : [],
+      });
     } catch {
       setError("Gagal memuat data peta. Pastikan backend berjalan.");
     } finally {

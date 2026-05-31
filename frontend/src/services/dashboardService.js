@@ -1,9 +1,11 @@
 import axios from "axios";
 import { getToken } from "./authService";
 
-const API = "/api/dashboard";
-
-const headers = () => ({ Authorization: `Bearer ${getToken()}` });
+const BASE = "https://dashboard-dapodik-production.up.railway.app";
+const API = `${BASE}/api/dashboard`;
+const headers = () => ({
+  Authorization: `Bearer ${getToken()}`,
+});
 
 export const getKPI = async (params = {}) => {
   const res = await axios.get(`${API}/kpi`, { headers: headers(), params });

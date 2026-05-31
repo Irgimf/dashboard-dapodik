@@ -149,7 +149,7 @@ export default function UserManagementPage() {
     setError("");
     try {
       const data = await getAllUsers();
-      setUsers(data);
+      setUsers(Array.isArray(data) ? data : []);
     } catch {
       setError("Gagal memuat data pengguna");
     } finally {

@@ -20,7 +20,7 @@ export default function SyncPage() {
     setError("");
     try {
       const res = await axios.get(`${API}/logs`, { headers: headers() });
-      setLogs(res.data);
+      setLogs(Array.isArray(res.data) ? res.data : []);
     } catch {
       setError("Gagal memuat log sinkronisasi");
     } finally {

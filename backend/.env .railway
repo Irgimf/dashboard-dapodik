@@ -1,0 +1,4 @@
+DATABASE_URL=postgresql://postgres:PveJfDAApLRBlHTiCwKMQmVhLGrvwRJu@postgres.railway.internal:5432/railway
+JWT_SECRET_KEY=dashboard_dapodik_secret_key_2025_bandung
+JWT_ALGORITHM=HS256
+JWT_EXPIRE_HOURS=8
